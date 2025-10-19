@@ -4,4 +4,4 @@ from django.apps import AppConfig
 
 
 class DjangoUUID47AppConfig(AppConfig):
-    pass
+    name = "django_uuid47"
