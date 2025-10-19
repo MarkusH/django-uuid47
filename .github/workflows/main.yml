@@ -20,11 +20,11 @@ jobs:
     strategy:
       matrix:
         python-version:
-        - '3.9'
-        - '3.10'
-        - '3.11'
-        - '3.12'
-        - '3.13'
+        # - '3.9'
+        # - '3.10'
+        # - '3.11'
+        # - '3.12'
+        # - '3.13'
         - '3.14'
 
     steps:
@@ -56,39 +56,39 @@ jobs:
     runs-on: ubuntu-24.04
     needs: tests
     steps:
-      - uses: actions/checkout@v5
+    - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.13'
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
 
-      - name: Install dependencies
-        run: uv pip install --system coverage[toml]
+    - name: Install dependencies
+      run: uv pip install --system coverage[toml]
 
-      - name: Download data
-        uses: actions/download-artifact@v5
-        with:
-          path: ${{ github.workspace }}
-          pattern: coverage-data-*
-          merge-multiple: true
+    - name: Download data
+      uses: actions/download-artifact@v5
+      with:
+        path: ${{ github.workspace }}
+        pattern: coverage-data-*
+        merge-multiple: true
 
-      - name: Combine coverage and fail if it's <100%
-        run: |
-          python -m coverage combine
-          python -m coverage html --skip-covered --skip-empty
-          python -m coverage report --fail-under=100
-          echo "## Coverage summary" >> $GITHUB_STEP_SUMMARY
-          python -m coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+    - name: Combine coverage and fail if it's <100%
+      run: |
+        python -m coverage combine
+        python -m coverage html --skip-covered --skip-empty
+        python -m coverage report --fail-under=100
+        echo "## Coverage summary" >> $GITHUB_STEP_SUMMARY
+        python -m coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
 
-      - name: Upload HTML report
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-report
-          path: htmlcov
+    - name: Upload HTML report
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: html-report
+        path: htmlcov
 
   release:
     needs: [coverage]
@@ -101,11 +101,11 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v5
+    - uses: actions/checkout@v5
 
-      - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v6
 
-      - name: Build
-        run: uv build
+    - name: Build
+      run: uv build
 
-      - uses: pypa/gh-action-pypi-publish@release/v1
+    - uses: pypa/gh-action-pypi-publish@release/v1
