@@ -50,4 +50,3 @@ Then add to your installed apps:
 
 Usage
 -----
-

@@ -41,7 +41,7 @@ classifiers = [
 ]
 dependencies = [
   "django>=4.2",
-  "python-uuidv47>=1.0.7"
+  "python-uuidv47>=1.0.7",
 ]
 urls = { Changelog = "https://github.com/MarkusH/django-uuid47/blob/main/CHANGELOG.rst", Funding = "https://github.com/sponsors/MarkusH/", Repository = "https://github.com/MarkusH/django-uuid47" }
 
