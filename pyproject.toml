@@ -6,7 +6,7 @@ requires = [
 
 [project]
 name = "django-uuid47"
-version = "0.1.0"
+version = "0.0.0"
 description = "Django UUID47 field and utilities."
 readme = "README.rst"
 keywords = [
