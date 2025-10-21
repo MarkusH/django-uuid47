@@ -3,13 +3,44 @@ from __future__ import annotations
 import uuid
 
 import python_uuidv47 as uuidv47
-from django.test import TestCase
+from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.test import SimpleTestCase, TestCase
 
 from django_uuid47 import forms
 from django_uuid47.fields import UUID47Field
 from tests.testapp.forms import RegularFieldForm
 
 from .testapp.models import RegularFieldModel
+
+
+class DjangoUUID47AppConfig(SimpleTestCase):
+    def test_set_keys_missing(self):
+        msg = "The UUID47_KEY setting is not configured. It must be a 16 bytes long string."
+        with (
+            self.assertRaisesMessage(ImproperlyConfigured, msg),
+            self.settings(UUID47_KEY=None),
+        ):
+            pass  # pragma: no cover
+
+    def test_set_keys_incorrect_length(self):
+        msg = "The UUID47_KEY setting must be a 16 bytes long string."
+        with (
+            self.assertRaisesMessage(ImproperlyConfigured, msg),
+            self.settings(UUID47_KEY="abc"),
+        ):
+            pass  # pragma: no cover
+
+    def test_set_keys_incorrect_type(self):
+        msg = "The UUID47_KEY setting must be a 16 bytes long string."
+        with (
+            self.assertRaisesMessage(ImproperlyConfigured, msg),
+            self.settings(UUID47_KEY=123),
+        ):
+            pass  # pragma: no cover
+
+    def test_set_key_receiver_ignores_other_settings(self):
+        with self.settings(FOO="bar"):
+            pass
 
 
 class UUID47FieldTests(TestCase):
@@ -95,3 +126,45 @@ class UUID47FormFieldTests(TestCase):
             obj = form.save()
             obj.refresh_from_db()
             assert obj.uuid == v7
+
+    def test_invalid_uuid(self):
+        f = forms.UUID47Field()
+
+        with (
+            self.assertRaises(ValidationError) as cm,
+            self.settings(
+                UUID47_KEY=b"\x12\x34\x56\x78\x9a\xbc\xde\xf0\xfe\xdc\xba\x98\x76\x54\x32\x10"
+            ),
+        ):
+            f.clean("2ff64574-c29e-41d4-a716-44665544000")
+
+        assert cm.exception.messages == ["Enter a valid UUID."]
+
+    def test_empty_values(self):
+        f = forms.UUID47Field(required=False)
+
+        cleaned = f.clean("")
+
+        assert cleaned is None
+
+    def test_prepare_value_str(self):
+        f = forms.UUID47Field()
+
+        with self.settings(
+            UUID47_KEY=b"\x12\x34\x56\x78\x9a\xbc\xde\xf0\xfe\xdc\xba\x98\x76\x54\x32\x10"
+        ):
+            prepared = f.prepare_value("550e8400-e29b-71d4-a716-446655440000")
+
+        assert prepared == "2ff64574-c29e-41d4-a716-446655440000"
+
+    def test_prepare_value_uuid(self):
+        f = forms.UUID47Field()
+
+        with self.settings(
+            UUID47_KEY=b"\x12\x34\x56\x78\x9a\xbc\xde\xf0\xfe\xdc\xba\x98\x76\x54\x32\x10"
+        ):
+            prepared = f.prepare_value(
+                uuid.UUID("550e8400-e29b-71d4-a716-446655440000")
+            )
+
+        assert prepared == "2ff64574-c29e-41d4-a716-446655440000"
