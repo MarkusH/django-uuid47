@@ -85,7 +85,7 @@ wheels = [
 
 [[package]]
 name = "django-uuid47"
-version = "0.0.0"
+version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "django", version = "5.2.5", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-13-django-uuid47-django52'" },
