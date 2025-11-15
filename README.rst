@@ -25,9 +25,9 @@ Django support for `UUID47 <https://github.com/stateless-me/uuidv47>`__.
 Requirements
 ------------
 
-Python 3.9 to 3.14 supported.
+Python 3.14 supported.
 
-Django 4.2 to 6.0 supported.
+Django 5.2 to 6.0 supported.
 
 Installation
 ------------
